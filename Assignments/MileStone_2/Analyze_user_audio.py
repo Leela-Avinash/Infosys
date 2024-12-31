@@ -11,17 +11,26 @@ if not api_key:
 
 genai.configure(api_key=api_key)
 
-Text_Analysis_PROMPT = (
-"""
-You are a state-of-the-art Sentiment, Tone, and Intent Analysis AI. 
-Your primary role is to deeply understand human emotions, linguistic patterns, and behavioral nuances in statements. Analyze each user input comprehensively and provide insights into the following aspects:
+generation_config = {
+    "temperature": 1,
+    "top_p": 0.95,
+    "top_k": 40,
+    "max_output_tokens": 8192,
+    "response_mime_type": "text/plain",
+}
 
-1. **Sentiment:** Identify the overall sentiment of the input as one of the following:
+AUDIO_ANALYSIS_PROMPT = """
+You are a state-of-the-art Sentiment, Tone, and Intent Analysis AI specialized in analyzing audio inputs. 
+Your primary role is to deeply understand human emotions, vocal expressions, linguistic patterns, and behavioral nuances in spoken statements. 
+Analyze each audio input comprehensively, taking into account both the content of the speech (transcribed text) and vocal characteristics such as pitch, volume, pace, pauses, and intonation.
+
+### Your Analysis Must Cover the Following Aspects:
+1. **Sentiment:** Identify the overall sentiment of the audio as one of the following:
    - Positive
    - Negative
    - Neutral
 
-2. **Tone:** Detect and describe the specific emotions conveyed by the user. Examples of tones include but are not limited to:
+2. **Tone:** Detect and describe the specific emotions conveyed in the user's voice. Examples of tones include:
    - Happy
    - Excited
    - Frustrated
@@ -31,7 +40,7 @@ Your primary role is to deeply understand human emotions, linguistic patterns, a
    - Grateful
    - Confused
 
-3. **Intent:** Determine the purpose or objective behind the user's statement. Examples of intents include:
+3. **Intent:** Determine the purpose or objective behind the user's spoken statement. Examples of intents include:
    - Seeking information
    - Providing feedback
    - Expressing dissatisfaction
@@ -39,17 +48,17 @@ Your primary role is to deeply understand human emotions, linguistic patterns, a
    - Sharing a personal experience
    - Offering a suggestion
    - Asking for help
-
+   
 **Important Instructions:**
 - Your analysis must be precise, objective, and free from personal bias.
 - Return the results in a clear, structured format as shown below.
 - Avoid providing explanations or reasoning about your analysis in the response.
 - Prioritize accuracy and ensure the analysis aligns with the context of the statement.
 
-**Output Format:**
+### Output Format Example:
 - Sentiment: [Positive/Negative/Neutral]  
-- Tone: [Emotion(s) of the user]  
-- Intent: [Purpose of the statement]
+- Tone: [Emotion(s) detected from the user's voice]  
+- Intent: [Purpose of the spoken statement]
 
 ### **Examples for Reference**
 
@@ -124,40 +133,55 @@ Intent: Seeking information
 
 By adhering to this structure and methodology, ensure that every response is highly accurate, insightful, and tailored to the nuances of human communication.
 """
-)
-
-generation_config = {
-    "temperature": 0.9, 
-    "top_p": 0.95,
-    "top_k": 40, 
-    "max_output_tokens": 8192,
-    "response_mime_type": "text/plain",
-}
 
 model = genai.GenerativeModel(
     model_name="gemini-2.0-flash-exp",
     generation_config=generation_config,
+    system_instruction=AUDIO_ANALYSIS_PROMPT,
 )
 
-chat_session = model.start_chat(
-    history=[
-        {"role": "user", "parts": [Text_Analysis_PROMPT]},
-        {"role": "model", "parts": [
-            "Understood! I’m ready to be your Real-Time AI Sales Intelligence Assistant. "
-            "Let’s get started and help customers find the best solutions for their needs! 🚀"
-        ]},
-    ]
-)
+def analyze_audio(audio_path: str) -> str:
+    """
+    Analyze sentiment, tone, and intent from an audio file.
 
-def Analyze_text(user_input):
+    Args:
+        audio_path (str): Path to the audio file.
+
+    Returns:
+        str: Analysis result containing sentiment, tone, and intent.
+    """
     try:
-        response = chat_session.send_message(user_input)
+        audio_file = genai.upload_file(audio_path, mime_type="audio/wav")
+        print(f"Uploaded file '{audio_file.display_name}' as: {audio_file.uri}")
+
+        chat_session = model.start_chat(
+            history=[
+                {
+                    "role": "user",
+                    "parts": [audio_file],
+                },
+                {
+                    "role": "model",
+                    "parts": [
+                        "Understood. I will analyze the tone, sentiment, and intent and return the results in the specified format."
+                    ],
+                },
+            ]
+        )
+
+        response = chat_session.send_message("Analyze the tone, sentiment, and intent from the audio.")
         return response.text
+
     except Exception as e:
-        return f"Error generating response: {e}"
-    
+        raise RuntimeError(f"An error occurred: {e}")
+
 if __name__ == "__main__":
-    user_input = "I’m glad you finally showed up, but it’s frustrating that you’re always late."
-    start = time.time()
-    print(Analyze_text(user_input))
-    print(f"Time taken: {time.time() - start} seconds")
+    audio_path = "./temp_recording.wav"
+    try:
+        start = time.time()
+        result = analyze_audio(audio_path)
+        print("\n### Analysis Result ###")
+        print(result)
+        print(f"\nAnalysis completed in {time.time() - start:.2f} seconds.")
+    except Exception as e:
+        print(e)
