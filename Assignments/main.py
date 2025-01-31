@@ -102,7 +102,6 @@ def main():
             print(f"Time taken for response generation: {time.time() - response_start:.2f} seconds")
             print(f"Total time taken: {time.time() - start:.2f} seconds")
 
-            # Convert AI response to speech (uncomment if needed)
             text_to_speech(ai_response)
 
 if __name__ == "__main__":

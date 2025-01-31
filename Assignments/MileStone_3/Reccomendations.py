@@ -6,10 +6,10 @@ import os
 load_dotenv()
 api_key = os.getenv("GOOGLE_GEMINI_API")
 
-customers = pd.read_csv('D:/Codes/Deep_Learning/Infosys_internship/Real-Time-AI-Sales-Intelligence-and-Sentiment-Driven-Deal-Negotiation-Assistant/Assignments/MileStone_3/mnt/data/customers.csv')
-interactions = pd.read_csv('D:/Codes/Deep_Learning/Infosys_internship/Real-Time-AI-Sales-Intelligence-and-Sentiment-Driven-Deal-Negotiation-Assistant/Assignments/MileStone_3/mnt/data/interactions.csv')
-deals = pd.read_csv('D:/Codes/Deep_Learning/Infosys_internship/Real-Time-AI-Sales-Intelligence-and-Sentiment-Driven-Deal-Negotiation-Assistant/Assignments/MileStone_3/mnt/data/deals.csv')
-# recommendations = pd.read_csv('D:/Codes/Deep_Learning/Infosys_internship/Real-Time-AI-Sales-Intelligence-and-Sentiment-Driven-Deal-Negotiation-Assistant/Assignments/MileStone_3/mnt/data/recommendations.csv')
+customers = pd.read_csv(r"D:\Assignments\Assignments\MileStone_3\mnt\data\customers.csv")
+interactions = pd.read_csv(r"D:\Assignments\Assignments\MileStone_3\mnt\data\interactions.csv")
+deals = pd.read_csv(r"D:\Assignments\Assignments\MileStone_3\mnt\data\deals.csv")
+# recommendations = pd.read_csv("D:/HARINI/Infosys/Assignments/Assignments/MileStone_3/mnt/data/recommendations.csv")
 
 generation_config = {
     "temperature": 1,
@@ -29,7 +29,18 @@ When generating recommendations, consider the following:
 2. Intent: Understand the purpose behind the query (e.g., seeking information, addressing concerns, casual engagement).  
 3. Context: Base recommendations strictly on the user's expressed concerns or interests. For example, if the user asks about product features, focus on features; if they express a concern, address it specifically.  
 4. Interaction History: Refer to previous interactions to understand how the user communicates and their preferences.  
-5. Company and Product Policies: Ensure all recommendations align with product limitations, company policies, and feasible terms. Avoid offering aggressive discounts or customizations unless the user explicitly requests or shows concern about pricing or flexibility.
+5. Company and Product Policies: Ensure all recommendations align with product limitations, company policies, and feasible terms. Avoid offering aggressive discounts or customizations unless the user explicitly requests or shows concern about pricing or flexibility.  
+6. Negotiation Strategies:  
+   a. Emphasize the value and unique selling points of the product.  
+   b. Offer flexible terms such as discounts, extended payment plans, or additional features where feasible.  
+   c. Address objections empathetically and provide data or examples to build trust.  
+   d. Suggest win-win solutions to maintain a positive relationship and align with customer goals.  
+   e. Use incremental concessions to meet customer needs while preserving value perception.  
+   f. Reframe objections: Turn concerns into opportunities to highlight product strengths or address misconceptions.  
+   g. Build urgency: Highlight time-sensitive offers or limited availability to motivate decision-making.  
+   h. Personalize offers: Tailor proposals based on customer needs, preferences, and past interactions.  
+   i. Provide guarantees: Offer money-back guarantees or risk-free trials to build customer confidence.  
+   j. Highlight long-term benefits: Focus on how the product contributes to the customer’s success over time.  
 
 Your response should reflect a conversational, empathetic, and engaging tone while addressing the user's specific needs. Always ensure your response is relevant to the context and does not include unnecessary details. For example:  
 - If the user asks about efficiency, focus on benefits like time-saving and automation.  
